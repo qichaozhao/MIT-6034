@@ -25,7 +25,6 @@ ANSWER1 = 3
 ANSWER2 = 2
 
 ### 2. Connect Four
-import tree_searcher
 from basicplayer import *
 from connectfour import *
 from util import *
