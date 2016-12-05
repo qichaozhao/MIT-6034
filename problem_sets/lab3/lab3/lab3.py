@@ -120,7 +120,7 @@ def alpha_beta_search(board, depth,
             break
 
     # if verbose:
-    print "AlphaBeta: AlphaBeta Decided on column %s with rating %s" % (best_val[1], best_val[0])
+    print "Alpha4: Decided on column %s with rating %s" % (best_val[1], best_val[0])
 
     return best_val[1]
 
