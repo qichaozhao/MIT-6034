@@ -423,7 +423,12 @@ your_negamax_player = lambda board: run_search_function(board,
 
 ## Uncomment this (or run it in the command window) to see how you do
 ## on the tournament that will be graded.
-run_game(progressive_deepening_player, your_player)
+
+import random
+if random.random() > 0.5:
+    run_game(your_player, human_player)
+else:
+    run_game(human_player, your_player)
 
 
 ## These three functions are used by the tester; please don't modify them!
