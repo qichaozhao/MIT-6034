@@ -3,8 +3,6 @@
 A General Constraint Satisfaction Problem Solver
 @author: yks
 """
-
-
 class Variable:
     """
     Representation of a discrete variable with a finite domain.
@@ -12,7 +10,6 @@ class Variable:
     A variable can be in the assigned state, in which v.is_assigned()
     will return true.
     """
-
     def __init__(self, name, domain, value=None):
         self._name = name
         self._domain = domain[:]
@@ -23,7 +20,7 @@ class Variable:
 
     def get_name(self):
         return self._name
-
+    
     def reduce_domain(self, value):
         self._domain.remove(value)
 
@@ -32,29 +29,27 @@ class Variable:
 
     def get_domain(self):
         return self._domain[:]
-
+    
     def is_assigned(self):
         return self._value is not None
 
     def get_assigned_value(self):
         return self._value
-
+    
     def set_value(self, value):
         self._value = value
-
+        
     def __str__(self):
-        buf = "%s(%s)" % (self._name, self._domain)
+        buf = "%s(%s)" %(self._name, self._domain)
         if self._value is not None:
-            buf += ": %s" % (self._value)
+            buf += ": %s" %(self._value)
         return buf
-
-
+        
 class BinaryConstraint:
     """
     Representation of a binary-constraint on two variables variable i and
     variable j.
     """
-
     def __init__(self, var_i_name, var_j_name, check_func, description=None):
         """
         * var_i_name, var_j_name are the names of the variables.
@@ -75,7 +70,7 @@ class BinaryConstraint:
 
     def get_variable_j_name(self):
         return self.var_j_name
-
+    
     def check(self, state, value_i=None, value_j=None):
         """
         state is the csp state and should be an instance of
@@ -89,37 +84,35 @@ class BinaryConstraint:
         if value_i is None and variable_i is not None:
             value_i = variable_i.get_assigned_value()
 
-        variable_j = state.get_variable_by_name(self.var_j_name)
+        variable_j = state.get_variable_by_name(self.var_j_name)            
         if value_j is None and variable_j is not None:
             value_j = variable_j.get_assigned_value()
-
+            
         if value_i is not None and value_j is not None:
             return self.check_func(value_i, value_j,
                                    self.var_i_name, self.var_j_name)
-        else:
-            # raise Exception("neither value_i nor value_j are set")
-
-            # if values of i or j are not set, we really can't check
-            # this constraint.  So the check passes.
-            return True
+	else:
+	    raise Exception("neither value_i nor value_j are set")
+	
+        # if values of i or j are not set, we really can't check
+        # this constraint.  So the check passes.
+        return True
 
     def __repr__(self):
         return self.__str__()
-
+    
     def __str__(self):
-        name = "BinaryConstraint(%s, %s)" % (self.get_variable_i_name(),
-                                             self.get_variable_j_name())
+        name = "BinaryConstraint(%s, %s)" %(self.get_variable_i_name(),
+                                            self.get_variable_j_name())
         if self.description is not None:
-            name += " : %s" % (self.description)
+            name += " : %s" %(self.description)
         return name
-
-
+        
 class CSPState:
     """
     Representation of a single state in the CSP search tree.  One can
     think of this as the encapsulation of the Variable-domain (VD) table.
     """
-
     def __init__(self,
                  constraint_map,
                  variable_map,
@@ -167,7 +160,7 @@ class CSPState:
             if v_i == variable_name:
                 constraints += val
         return constraints
-
+    
     def get_all_constraints(self):
         """
         List all the constraints in this problem
@@ -185,20 +178,7 @@ class CSPState:
         for name in self.variable_order:
             variables.append(self.variable_map[name])
         return variables
-
-    def get_state_value(self):
-        """
-        Get the current value of the state (sum of all assigned vars)
-        :return:
-        """
-        vars = self.get_all_variables()
-        val = 0
-        for v in vars:
-            if v.is_assigned() is True:
-               val += v.get_assigned_value()
-
-        return val
-
+        
     def get_current_variable_name(self):
         """
         Get the name of the variable currently being assigned.
@@ -217,7 +197,7 @@ class CSPState:
             return self.get_variable_by_index(self.variable_index)
         else:
             return None
-
+        
     def set_variable_by_index(self, variable_index, variable_value):
         """
         assign variable (given index) the variable_value
@@ -226,7 +206,7 @@ class CSPState:
         if variable is not None:
             variable.set_value(variable_value)
             self.variable_index = variable_index
-
+        
     def get_variable_by_index(self, index):
         """
         fetch the index(th) variable object
@@ -265,12 +245,12 @@ class CSPState:
             vnode = self.get_variable_by_name(varname)
             if vnode.is_assigned():
                 assignment.append((vnode.get_name(),
-                                   vnode.get_assigned_value()))
+				   vnode.get_assigned_value()))
         return assignment
-
+    
     def __str__(self):
         return self.vd_table()
-
+    
     def vd_table(self):
         """
         Output the vd table as a string for debugging.
@@ -279,11 +259,11 @@ class CSPState:
         for var_name in self.variable_order:
             var = self.variable_map[var_name]
             if var.is_assigned():
-                buf += "%s | %s*\n" % (var.get_name(),
-                                       var.get_assigned_value())
+                buf += "%s | %s*\n" %(var.get_name(),
+				      var.get_assigned_value())
             else:
-                buf += "%s | %s\n" % (var.get_name(),
-                                      var.get_domain())
+                buf += "%s | %s\n" %(var.get_name(),
+                                     var.get_domain())
         return buf
 
 
@@ -294,25 +274,23 @@ def basic_constraint_checker(state, verbose=False):
     """
     constraints = state.get_all_constraints()
     for constraint in constraints:
-        var_i = state.get_variable_by_name(constraint.get_variable_i_name())
-        var_j = state.get_variable_by_name(constraint.get_variable_j_name())
-
-        if not var_i.is_assigned() or not var_j.is_assigned():
-            continue
-
+	var_i = state.get_variable_by_name(constraint.get_variable_i_name())
+	var_j = state.get_variable_by_name(constraint.get_variable_j_name())
+	
+	if not var_i.is_assigned() or not var_j.is_assigned():
+	    continue
+	
         if not constraint.check(state):
             if verbose:
-                print "CONSTRAINT-FAILS: %s" % (constraint)
+                print "CONSTRAINT-FAILS: %s" %(constraint)
             return False
     return True
-
 
 class CSP:
     """
     Top-level wrapper object that encapsulates all the
     variables and constraints of a CSP problem
     """
-
     def __init__(self, constraints, variables):
         # Step 1: generate a constraint map, a mapping of pairs of
         # variable names to defined constraints on that pair.
@@ -344,7 +322,7 @@ class CSP:
 
     def solve(self,
               constraint_checker=basic_constraint_checker,
-              verbose=False, maximise=True):
+              verbose=False):
         """
         Perform a depth-first search with backtracking to solve
         This CSP problem.
@@ -361,31 +339,31 @@ class CSP:
 
         step = 0
         while len(agenda) > 0:
-            cur_node = agenda.pop()
-            state = cur_node.value
+            cur_node = agenda.pop(0)
+            state = cur_node.value        
             cur_node.step = step
-
+            
             if verbose:
-                print "-" * 20
-                print "%d. EXAMINING:\n%s" % (step, state.vd_table())
-
+                print "-"*20
+                print "%d. EXAMINING:\n%s" %(step, state.vd_table())
+        
             if not constraint_checker(state, verbose):
                 if verbose:
-                    print "%d. FAIL:\n%s" % (step, state.vd_table())
+                    print "%d. FAIL:\n%s" %(step, state.vd_table())
                 cur_node.status = Node.FAILED
                 step += 1
                 continue
 
-            # print state.is_solution()
             if state.is_solution():
                 cur_node.status = Node.SOLUTION
                 if verbose:
-                    print "%d. SOLUTION:\n%s" % (step, state.vd_table())
+                    print "%d. SOLUTION:\n%s" %(step, state.vd_table())
                 return state, search_root
 
             cur_node.status = Node.CONTINUE
             if verbose:
-                print "%d. CONTINUE:\n%s" % (step, state.vd_table())
+                print "%d. CONTINUE:\n%s" %(step, state.vd_table())
+        
 
             next_variable_index = state.variable_index + 1
             next_variable = state.get_variable_by_index(next_variable_index)
@@ -400,11 +378,10 @@ class CSP:
             cur_node.add_children(children)
             agenda = children + agenda
             step += 1
-
+            
         # fail! no solution
         return None, search_root
-
-
+    
 class Node:
     """
     A tree node that csp.solve() uses/returns that keeps track of the CSP
@@ -414,7 +391,7 @@ class Node:
     FAILED = "f"
     CONTINUE = "c"
     SOLUTION = "*"
-
+    
     def __init__(self, label, value):
         self.label = label
         self.status = Node.UNEXTENDED
@@ -424,30 +401,27 @@ class Node:
 
     def add_children(self, children):
         self.children += children
-
-    def get_value(self):
-        return self.value.get_state_value()
-
+        
     def __str__(self):
         return self.label
-
+            
     def tree_to_string(self, node, depth=0):
-        pad = depth * "\t"
-        current_var = node.value.get_current_variable_name()
+        pad = depth*"\t"
+        current_var = node.value.get_current_variable_name()    
         if current_var is not None:
-            buf = "%s%s=%s(%s,%s)\n" % (pad,
-                                        current_var,
-                                        node.label,
-                                        node.status,
-                                        node.step)
+            buf = "%s%s=%s(%s,%s)\n" %(pad,
+                                       current_var,
+                                       node.label,
+                                       node.status,
+                                       node.step)
         else:
-            buf = "%s%s\n" % (pad, node.label)
-
+            buf = "%s%s\n" %(pad, node.label)
+            
         for child in node.children:
-            buf += self.tree_to_string(child, depth + 1)
+            buf += self.tree_to_string(child, depth+1)
         return buf
 
-
+    
 def simple_csp_problem():
     """
     Formulation of a simple CSP problem that attempts to find
@@ -456,7 +430,7 @@ def simple_csp_problem():
     """
     variables = []
     domain = [1, 2, 3, 4]
-
+    
     variables.append(Variable("A", domain))
     variables.append(Variable("B", domain))
     variables.append(Variable("C", domain))
@@ -466,20 +440,19 @@ def simple_csp_problem():
 
     def less_than(val_a, val_b, name_a=None, name_b=None):
         return val_a < val_b
-
+    
     constraints.append(BinaryConstraint("A", "B", less_than, "A < B"))
     constraints.append(BinaryConstraint("B", "C", less_than, "B < C"))
     constraints.append(BinaryConstraint("C", "D", less_than, "C < D"))
 
     def not_equal(val_a, val_b, name_a=None, name_b=None):
         return val_a != val_b
-
+    
     constraints.append(BinaryConstraint("A", "B", not_equal, "A != B"))
     constraints.append(BinaryConstraint("B", "C", not_equal, "B != C"))
     constraints.append(BinaryConstraint("C", "D", not_equal, "C != D"))
     constraints.append(BinaryConstraint("A", "D", not_equal, "A != D"))
     return CSP(constraints, variables)
-
 
 def solve_csp_problem(problem, checker, verbose=False):
     """
@@ -492,19 +465,18 @@ def solve_csp_problem(problem, checker, verbose=False):
 
     if verbose:
         if answer is not None:
-            print "ANSWER: %s" % (answer.solution())
+            print "ANSWER: %s" %(answer.solution())
         else:
             print "NO SOLUTION FOUND"
         if search_tree is not None:
             print "TREE:\n"
             print search_tree.tree_to_string(search_tree)
-
+        
     return answer, search_tree
-
-
+        
 if __name__ == "__main__":
     checker = basic_constraint_checker
-    # import lab4
-    # fc_checker = lab4.forward_checking
-    # fcps_checker = lab4.forward_checking_prop_singleton
+    #import lab4 
+    #fc_checker = lab4.forward_checking    
+    #fcps_checker = lab4.forward_checking_prop_singleton
     solve_csp_problem(simple_csp_problem, checker, verbose=True)
