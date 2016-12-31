@@ -1,6 +1,6 @@
 from classify import *
 from mat_vec_ops import *
-from tester import make_test
+from tester import make_test, get_tests
 
 # CSP tests
 

@@ -107,7 +107,7 @@ def forward_checking_prop_singleton(state, verbose=False):
 
 ## The code here are for the tester
 ## Do not change.
-
+from moose_csp import moose_csp_problem
 def csp_solver_tree(problem, checker):
     problem_func = globals()[problem]
     checker_func = globals()[checker]
