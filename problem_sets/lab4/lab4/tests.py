@@ -1,5 +1,3 @@
-import math
-
 from classify import *
 from mat_vec_ops import *
 from tester import make_test
